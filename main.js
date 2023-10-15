@@ -8,10 +8,14 @@ const user = {
 };
 
 function hasAccess(user, feature) {
-  return true;
+  if (user.role !== user.cachedData.role) {
+    return false;
+  }
+  return user.role === 'teacher' && feature === 'groups';
 }
 
 function changeUserRole(user, newRole) {
+  user.cachedData.role = user.role;
   user.role = newRole;
 }
 
@@ -19,11 +23,15 @@ function displayInvitationCode(user) {
   if (hasAccess(user, 'groups')) {
     console.log(`Invitation Code: ${user.cachedData.invitationCode}`);
   } else {
-    console.log('You can't access that!');
+    console.log("You can't access that!");
   }
 }
 
-changeUserRole(user, 'teacher'); // change the role to teacher
-displayInvitationCode(user);     // display the invitation code (vulnerability type)
-changeUserRole(user, 'student'); // change the role back to student
-displayInvitationCode(user);     // change the invitation code again (vulnerability type)
+// Change a role
+changeUserRole(user, 'teacher');
+displayInvitationCode(user); // Display the invitation code
+
+// Change the role back to student
+changeUserRole(user, 'student');
+displayInvitationCode(user); // Deny the access
+
